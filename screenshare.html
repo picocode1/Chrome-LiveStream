@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Stream</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+		<!-- <link rel="shortcut icon" href="https://www.google.com/favicon.ico" type="image/x-icon"> -->
+	</head>
+	<style>
+		/* Hide the canvas */
+		canvas {
+			display: none;
+		}
+		video {
+			margin-top: 50px;
+			width: 75%
+		}
+		h1 {
+			margin-top: 30px;
+		}
+
+		.button {
+  			background-color: rgb(26, 26, 26);
+  			border-radius: 8px;
+  			border-width: 0;
+  			color: #ffffff;
+  			cursor: pointer;
+  			display: inline-block;
+  			font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  			font-size: 14px;
+  			font-weight: 500;
+  			line-height: 20px;
+  			list-style: none;
+  			margin: 0;
+  			padding: 10px 12px;
+  			text-align: center;
+  			transition: all 200ms;
+  			vertical-align: baseline;
+  			white-space: nowrap;
+  			user-select: none;
+  			-webkit-user-select: none;
+  			touch-action: manipulation;
+		}
+		
+		.button:focus {
+			border: 2px solid #ad0000;
+			background-color: rgb(77, 77, 77);
+		}
+
+	</style>
+	<body>
+		<h1 id="url" target="_blank">
+		<h1 id="viewcount">Viewcount: 0</h1>
+		<h1 id="resolution">Resolution:</h1>
+		<h1 id="compression">Compression: 0%</h1>
+		
+		<h1>Choose resolution to start stream, resolution updates automatically.</h1>
+
+		<div classs="list">
+			<input class="button" type="button" value="1440p (Not Recommended)" onclick="location.href = '#1440'">
+			<input class="button" type="button" value="1080p" onclick="location.href = '#1080'">
+			<input class="button" type="button" value="720p (Recommended)" onclick="location.href = '#720'">
+			<input class="button" type="button" value="480p" onclick="location.href = '#480'">
+			<input class="button" type="button" value="360p" onclick="location.href = '#360'">
+			<input class="button" type="button" value="144p" onclick="location.href = '#144'">
+		</div>
+
+		<canvas></canvas>
+		<video autoplay class="img-fluid">
+		
+	</body>
+	<script>
+		//Remove old hash on reload
+		document.location.hash = '';
+
+		var ip = '127.0.0.1'
+		var port = '6969'
+		var socket = new WebSocket(`ws://${ip}:${port}`)
+		console.log('WebSocket: Waiting for connection')
+
+
+		socket.onopen = function(){
+			console.log(`WebSocket: Listening on ${ip}:${port}`)
+		}
+
+		socket.onclose = function(){
+			console.error('WebSocket: Lost connection')
+			alert('WebSocket: Lost connection')
+		}
+
+		//Settings object we can later add more settings to this
+		var settings = {
+			compression: 40
+		}
+
+		socket.onmessage = function (event) {
+			var json = JSON.parse(event.data)
+
+			//Check if viewcount is not undefined then update viewcount
+			if (json.viewcount != null) {
+				document.getElementById('viewcount').innerHTML = `Viewcount: ${json.viewcount}`
+			}
+
+			//Set the current compression value to the settings
+			if (event.data.length < 50 && json.viewcount == null){
+				settings.compression = json.compression
+				document.getElementById('compression').innerHTML = `Compression: ${json.compression}%`
+			}
+		}
+
+		const video = document.querySelector('video');
+		const canvas = window.canvas = document.querySelector('canvas');
+
+		var LiveStreaming = false
+
+		//If the hash updates we start LiveStreaming, aka on button press
+		window.onhashchange = function() {
+			var resolution = window.location.hash.slice(1)
+			switch(resolution){
+				case '1440':
+					settings.w = 2560;settings.h = 1440;
+					break;
+				case '1080':
+					settings.w = 1920;settings.h = 1080;
+					break;
+				case '720':
+					settings.w = 1280;settings.h = 720;
+					break;			
+				case '480':
+					settings.w = 854;settings.h = 480;
+					break;
+				case '360':
+					settings.w = 640;settings.h = 360;
+					break;				
+				case '144':
+					settings.w = 256;settings.h = 144;
+					break;
+
+				//Incase something happens, default to 720p
+				default:
+					settings.w = 1280;settings.h = 720;
+					break
+			}
+
+			//Check if we are livestreaming then return do we dont call getDisplayMedia twice
+			if (LiveStreaming && resolution != undefined) return
+
+			//Set screen data
+			navigator.mediaDevices.getDisplayMedia({
+				video: { 
+					displaySurface: "monitor",
+					width: settings.w,
+					height: settings.h
+				}
+			}).then(stream => {
+				//Set sharing to true so we dont LiveStream twice
+				LiveStreaming = true
+
+				// Make properties global so we can use them later
+				window.stream = stream;
+				video.srcObject = stream;
+
+				//Set resolution text
+				document.getElementById('resolution').innerHTML = `Resolution: ${resolution}`
+
+				alert(`LiveStream URL: http://${ip}/screenshare/livestream.html`)
+			}).catch(console.log);
+
+			//Set temp values
+			var temp = ''
+			var temp2 = ''
+			setInterval(function(){
+				//Check if stream is a object aka check if its the data we expect
+				if (typeof stream == 'object') {
+					//Set canvas size from settings
+					canvas.width = settings.w;
+					canvas.height = settings.h;
+					canvas.getContext('2d').drawImage(video, 0, 0, settings.w, settings.h);
+
+					//Create final base64 image
+					var dataURL = canvas.toDataURL("image/jpeg", settings.compression / 100);
+
+					//Cache value
+					temp = dataURL
+
+					//If the image is the same as the last image then dont resend, save bandwith
+					if (temp2 == temp){
+						return
+					}
+					socket.send(JSON.stringify({compression: settings.compression / 100, image: dataURL, width: settings.w, height: settings.h}))
+					
+					//Cache value
+					temp2 = dataURL
+				}
+			//Send new image every 75ms
+			}, 75);
+		}
+	</script>
+</html>
