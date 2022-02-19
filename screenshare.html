@@ -55,14 +55,14 @@
 	<body>
 		<h1 id="url" target="_blank">
 		<h1 id="viewcount">Viewcount: 0</h1>
-		<h1 id="resolution">Resolution:</h1>
+		<!-- <h1 id="resolution">Resolution:</h1> -->
 		<h1 id="compression">Compression: 0%</h1>
 		
 		<h1>Choose resolution to start stream, resolution updates automatically.</h1>
 
 		<div classs="list">
-			<input class="button" type="button" value="1440p (Not Recommended)" onclick="location.href = '#1440'">
-			<input class="button" type="button" value="1080p" onclick="location.href = '#1080'">
+			<!-- <input class="button" type="button" value="1440p (Not Recommended)" onclick="location.href = '#1440'"> -->
+			<!-- <input class="button" type="button" value="1080p" onclick="location.href = '#1080'"> -->
 			<input class="button" type="button" value="720p (Recommended)" onclick="location.href = '#720'">
 			<input class="button" type="button" value="480p" onclick="location.href = '#480'">
 			<input class="button" type="button" value="360p" onclick="location.href = '#360'">
@@ -121,12 +121,12 @@
 		window.onhashchange = function() {
 			var resolution = window.location.hash.slice(1)
 			switch(resolution){
-				case '1440':
-					settings.w = 2560;settings.h = 1440;
-					break;
-				case '1080':
-					settings.w = 1920;settings.h = 1080;
-					break;
+				// case '1440':
+				// 	settings.w = 2560;settings.h = 1440;
+				// 	break;
+				// case '1080':
+				// 	settings.w = 1920;settings.h = 1080;
+				// 	break;
 				case '720':
 					settings.w = 1280;settings.h = 720;
 					break;			
@@ -165,9 +165,9 @@
 				video.srcObject = stream;
 
 				//Set resolution text
-				document.getElementById('resolution').innerHTML = `Resolution: ${resolution}`
+				// document.getElementById('resolution').innerHTML = `Resolution: ${resolution}`
 
-				alert(`LiveStream URL: http://${ip}/screenshare/livestream.html`)
+				alert(`LiveStream URL: http://${ip}:80/livestream`)
 			}).catch(console.log);
 
 			//Set temp values
