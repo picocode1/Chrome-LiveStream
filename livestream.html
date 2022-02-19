@@ -54,8 +54,8 @@
 				<a class="nav-item nav-link">
 					<!-- This value will be updated for everyone watching -->
 					<label>Quality (For everyone synced)</label><br>
-					<input type="range" class="form-range" id="compression" min="0" max="50" oninput="this.nextElementSibling.value = this.value + '%'">
-				  	<output id="rangevalue">40%</output>
+					<input type="range" class="form-range" id="compression" min="0" max="100" oninput="this.nextElementSibling.value = this.value + '%'">
+				  	<output id="rangevalue">50%</output>
 				</a>
 				<a class="nav-item nav-link">
 					<!-- Select the size of the screen -->
@@ -89,12 +89,14 @@
 	</div>
 </body>
 <script>
-
-
 	function getColor(value) {
 		var hue = ((1 - value) * 120).toString(10);
 		return ["hsl(", hue, ",100%,50%)"].join("");
 	}
+
+	//Set color of slider on load
+	document.getElementById('rangevalue').style.color = getColor($("#compression").val() / 100)
+
 
 	//Set the screenshare to fullscreen when clicked
 	function FullScreen() {
@@ -140,7 +142,7 @@
 	});
 
 	$("#compression").mousemove(function() {
-		document.getElementById('rangevalue').style.color = getColor($("#compression").val() / 100 * 2)
+		document.getElementById('rangevalue').style.color = getColor($("#compression").val() / 100)
 	});
 
 
