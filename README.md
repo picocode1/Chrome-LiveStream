@@ -8,6 +8,7 @@ Share your screen to your website from any chrome browser only using JavaScript
 - [x] Auto load on LiveStream page.
 - [x] Quality color slider.
 - [x] Low latency.
+- [x] Total networks usage in title.
 - [x] Responsive design.
 - [ ] Phone LiveStream ([Browser compatibility](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia#browser_compatibility)).
 - [ ] Admin panel.
