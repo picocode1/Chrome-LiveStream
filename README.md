@@ -1,4 +1,4 @@
-# Chrome-LiveSteam
+# Chrome-LiveStream
 Screenshare to website from any chrome browser
 
 ### Feature list
