@@ -1,5 +1,5 @@
 # Chrome-LiveStream
-Screenshare to website from any chrome browser only using JavaScript, HTML and CSS
+Share your screen to your website from any chrome browser only using JavaScript, HTML and CSS
 
 ### Feature list
 
