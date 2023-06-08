@@ -34,8 +34,6 @@ var server = app.listen(HTTP_PORT, function(){
 });
 
 
-
-
 //Function to only send data to everyone except the sender so we dont send the livestream back to the 
 function ScreenCapture(data, sender) {
 	Server.clients.forEach(function(client) {
